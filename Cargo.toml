@@ -1,20 +1,19 @@
 [package]
-name = "sigmathingy"
+name = "sigmaos-thingy"
 version = "0.1.0"
 edition = "2021"
-description = "SigmaOS system thingy utility"
+description = "SigmaOS thingy - system utility inspired by linuxmint/thingy"
 authors = ["SigmaOS Contributors"]
 license = "MIT OR Apache-2.0"
+repository = "https://github.com/AaryanSinghChauhan09/SigmaOS-thingy"
 
 [[bin]]
-name = "sigmathingy"
+name = "sigma-thingy"
 path = "src/main.rs"
 
 [lib]
-name = "sigmathingy"
+name = "sigmaos_thingy"
 path = "src/lib.rs"
 
 [dependencies]
 log = "0.4"
-
-[dev-dependencies]
