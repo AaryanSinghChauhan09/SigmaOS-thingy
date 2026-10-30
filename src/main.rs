@@ -1,6 +1,6 @@
-//! sigmathingy entry point.
+//! SigmaOS Thingy entry point.
 
 fn main() {
-    let thingy = sigmathingy::Thingy::new();
+    let thingy = sigmaos_thingy::Thingy::new();
     thingy.run();
 }
