@@ -15,7 +15,8 @@ pub struct Action {
 }
 
 impl Action {
-    /// Create a new action.
+    /// Create an action from an executable and optional whitespace-separated arguments.
+    /// Shell quoting and expansions are not interpreted.
     pub fn new(id: impl Into<String>, label: impl Into<String>, command: impl Into<String>) -> Self {
         Action {
             id: id.into(),
@@ -34,8 +35,10 @@ impl Action {
 
 /// The Thingy utility panel.
 ///
-/// Manages a registry of quick-access actions and exposes them to the
-/// SigmaOS shell via D-Bus. Lightweight by design — no persistent state.
+/// Manages an in-memory registry of quick-access actions.
+///
+/// D-Bus exposure is planned but not implemented; [`Thingy::run`] reports that
+/// limitation instead of claiming that a service has started.
 pub struct Thingy {
     actions: HashMap<String, Action>,
 }
@@ -84,29 +87,38 @@ impl Thingy {
         self.actions.get(id)
     }
 
-    /// Execute an action by ID, spawning its command in the background.
+    /// Start an action by ID as a background process without invoking a shell.
     ///
-    /// Returns `true` if the action was found and launched, `false` otherwise.
+    /// Returns `true` only when the executable was found and the OS accepted
+    /// the spawn request. It does not report the child process's later exit.
     pub fn activate(&self, id: &str) -> bool {
         if let Some(action) = self.actions.get(id) {
-            self.spawn_command(&action.command);
-            true
+            self.spawn_command(&action.command)
         } else {
             false
         }
     }
 
-    /// Spawn the given command string as a background process.
-    fn spawn_command(&self, cmd: &str) {
-        // TODO: replace with a proper process spawner
-        let _ = std::process::Command::new("sh")
-            .args(["-c", cmd])
-            .spawn();
+    /// Spawn an executable and literal whitespace-separated arguments.
+    fn spawn_command(&self, command: &str) -> bool {
+        let mut words = command.split_whitespace();
+        let Some(program) = words.next() else {
+            return false;
+        };
+        std::process::Command::new(program)
+            .args(words)
+            .spawn()
+            .is_ok()
     }
 
-    /// Start the Thingy D-Bus service and enter the event loop.
-    pub fn run(&self) {
-        // TODO: connect to D-Bus, export object, run event loop
+    /// Start the Thingy D-Bus service.
+    ///
+    /// Returns `Unsupported` until D-Bus integration and its event loop exist.
+    pub fn run(&self) -> std::io::Result<()> {
+        Err(std::io::Error::new(
+            std::io::ErrorKind::Unsupported,
+            "Thingy D-Bus service is not implemented",
+        ))
     }
 
     /// Return an iterator over all registered actions.
