@@ -1,6 +1,6 @@
 [component]
 name = "SigmaOS-thingy"
-description = "SigmaOS subsystem component for thingy"
+description = "SigmaOS system thingy utility"
 version = "0.1.0"
 tier = 5
 
